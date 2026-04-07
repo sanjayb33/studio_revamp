@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as RadioGroup from '@radix-ui/react-radio-group';
-import * as Select from '@radix-ui/react-select';
+
 import * as Switch from '@radix-ui/react-switch';
 import {
   Check,
@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Zap,
   Search,
-  ChevronDown,
+
 } from 'lucide-react';
 import type { WizardStep, Connector } from '@/types';
 
@@ -401,7 +401,7 @@ function StepFeedConfig() {
 function StepMapping() {
   const [autoMapping, setAutoMapping] = useState(false);
   const [mapped, setMapped] = useState(false);
-  const [mappings, setMappings] = useState(FIELD_SUGGESTIONS);
+  const [mappings] = useState(FIELD_SUGGESTIONS);
 
   const handleAutoMap = async () => {
     setAutoMapping(true);
