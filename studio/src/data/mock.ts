@@ -1,0 +1,161 @@
+import type { Pipeline, ActivityItem, ExecutionRun, TeamMember, Credential, FieldMapping } from '@/types';
+
+export const mockPipelines: Pipeline[] = [
+  {
+    id: '1',
+    name: 'Salesforce → Snowflake',
+    connector: 'Salesforce',
+    connectorType: 'salesforce',
+    target: 'Snowflake',
+    status: 'active',
+    lastRun: '2 min ago',
+    nextRun: 'in 13 min',
+    records: '1,248,304',
+    schedule: '*/15 * * * *',
+    createdAt: '2026-01-12',
+    duration: '4m 22s',
+    successRate: 99.2,
+  },
+  {
+    id: '2',
+    name: 'PostgreSQL → BigQuery',
+    connector: 'PostgreSQL',
+    connectorType: 'postgresql',
+    target: 'BigQuery',
+    status: 'paused',
+    lastRun: '2h ago',
+    nextRun: 'paused',
+    records: '450,100',
+    schedule: '0 */2 * * *',
+    createdAt: '2026-01-18',
+    duration: '1m 38s',
+    successRate: 97.8,
+  },
+  {
+    id: '3',
+    name: 'REST API → S3',
+    connector: 'REST API',
+    connectorType: 'rest-api',
+    target: 'S3',
+    status: 'failed',
+    lastRun: '30 min ago',
+    nextRun: 'retry in 5 min',
+    records: '89,200',
+    schedule: '0 0 * * *',
+    createdAt: '2026-02-03',
+    duration: '0m 48s',
+    successRate: 82.4,
+  },
+  {
+    id: '4',
+    name: 'MySQL → Redshift',
+    connector: 'MySQL',
+    connectorType: 'mysql',
+    target: 'Redshift',
+    status: 'active',
+    lastRun: '5 min ago',
+    nextRun: 'in 25 min',
+    records: '2,104,882',
+    schedule: '*/30 * * * *',
+    createdAt: '2025-12-20',
+    duration: '8m 15s',
+    successRate: 98.9,
+  },
+  {
+    id: '5',
+    name: 'Stripe → BigQuery',
+    connector: 'Stripe',
+    connectorType: 'stripe',
+    target: 'BigQuery',
+    status: 'active',
+    lastRun: '1h ago',
+    nextRun: 'in 1h',
+    records: '34,712',
+    schedule: '0 * * * *',
+    createdAt: '2026-03-01',
+    duration: '0m 32s',
+    successRate: 100,
+  },
+  {
+    id: '6',
+    name: 'HubSpot → Snowflake',
+    connector: 'HubSpot',
+    connectorType: 'hubspot',
+    target: 'Snowflake',
+    status: 'active',
+    lastRun: '45 min ago',
+    nextRun: 'in 15 min',
+    records: '124,530',
+    schedule: '0 */1 * * *',
+    createdAt: '2026-02-14',
+    duration: '2m 04s',
+    successRate: 99.7,
+  },
+];
+
+export const mockActivity: ActivityItem[] = [
+  { id: 'a1', type: 'run', pipeline: 'Salesforce → Snowflake', time: '2 min ago', detail: '1,248,304 records synced in 4m 22s' },
+  { id: 'a2', type: 'error', pipeline: 'REST API → S3', time: '30 min ago', detail: 'Connection timeout after 3 retries' },
+  { id: 'a3', type: 'run', pipeline: 'MySQL → Redshift', time: '35 min ago', detail: '2,104,882 records synced in 8m 15s' },
+  { id: 'a4', type: 'paused', pipeline: 'PostgreSQL → BigQuery', time: '2h ago', detail: 'Manually paused by admin@company.com' },
+  { id: 'a5', type: 'deployed', pipeline: 'HubSpot → Snowflake', time: '3h ago', detail: 'Pipeline deployed to production' },
+  { id: 'a6', type: 'run', pipeline: 'Stripe → BigQuery', time: '1h ago', detail: '34,712 records synced in 32s' },
+  { id: 'a7', type: 'run', pipeline: 'Salesforce → Snowflake', time: '17 min ago', detail: '1,190,204 records synced in 4m 01s' },
+];
+
+export const mockExecutionRuns: ExecutionRun[] = [
+  { id: 'r1', startedAt: '2026-04-07 14:02', duration: '4m 22s', status: 'success', records: '1,248,304' },
+  { id: 'r2', startedAt: '2026-04-07 13:47', duration: '4m 01s', status: 'success', records: '1,190,204' },
+  { id: 'r3', startedAt: '2026-04-07 13:32', duration: '4m 18s', status: 'success', records: '1,201,103' },
+  { id: 'r4', startedAt: '2026-04-07 13:17', duration: '0m 48s', status: 'failed', records: '0', errorMessage: 'SSL certificate verification failed. Remote host returned an error: 403 Forbidden after 3 retries.' },
+  { id: 'r5', startedAt: '2026-04-07 13:02', duration: '4m 11s', status: 'success', records: '1,189,024' },
+  { id: 'r6', startedAt: '2026-04-07 12:47', duration: '4m 29s', status: 'success', records: '1,245,830' },
+];
+
+export const mockFieldMappings: FieldMapping[] = [
+  { id: 'f1', source: 'Id', sourceType: 'STRING', target: 'salesforce_id', targetType: 'VARCHAR(18)', confidence: 100, aiSuggested: false },
+  { id: 'f2', source: 'Name', sourceType: 'STRING', target: 'account_name', targetType: 'VARCHAR(255)', confidence: 98, aiSuggested: true },
+  { id: 'f3', source: 'Email', sourceType: 'EMAIL', target: 'contact_email', targetType: 'VARCHAR(255)', confidence: 97, aiSuggested: true },
+  { id: 'f4', source: 'Phone', sourceType: 'PHONE', target: 'phone_number', targetType: 'VARCHAR(50)', confidence: 95, aiSuggested: true },
+  { id: 'f5', source: 'CreatedDate', sourceType: 'DATETIME', target: 'created_at', targetType: 'TIMESTAMP', confidence: 99, aiSuggested: true },
+  { id: 'f6', source: 'LastModifiedDate', sourceType: 'DATETIME', target: 'updated_at', targetType: 'TIMESTAMP', confidence: 99, aiSuggested: true },
+  { id: 'f7', source: 'AnnualRevenue', sourceType: 'CURRENCY', target: 'annual_revenue_usd', targetType: 'DECIMAL(15,2)', confidence: 92, aiSuggested: true },
+  { id: 'f8', source: 'Industry', sourceType: 'PICKLIST', target: 'industry_category', targetType: 'VARCHAR(100)', confidence: 88, aiSuggested: true },
+];
+
+export const mockTeamMembers: TeamMember[] = [
+  { id: 't1', name: 'Alex Rodriguez', email: 'alex@company.com', role: 'admin', lastActive: '2 min ago' },
+  { id: 't2', name: 'Sarah Chen', email: 'sarah@company.com', role: 'editor', lastActive: '1h ago' },
+  { id: 't3', name: 'Marcus Johnson', email: 'marcus@company.com', role: 'viewer', lastActive: '3h ago' },
+  { id: 't4', name: 'Priya Patel', email: 'priya@company.com', role: 'editor', lastActive: 'Yesterday' },
+];
+
+export const mockCredentials: Credential[] = [
+  { id: 'c1', name: 'Salesforce Production', type: 'OAuth 2.0', connectedPipelines: 2, createdAt: '2026-01-10', lastUsed: '2 min ago' },
+  { id: 'c2', name: 'PostgreSQL Analytics DB', type: 'Connection String', connectedPipelines: 1, createdAt: '2026-01-15', lastUsed: '2h ago' },
+  { id: 'c3', name: 'Snowflake Data Warehouse', type: 'API Key', connectedPipelines: 3, createdAt: '2026-01-08', lastUsed: '2 min ago' },
+  { id: 'c4', name: 'AWS S3 Bucket', type: 'IAM Role', connectedPipelines: 1, createdAt: '2026-02-01', lastUsed: '30 min ago' },
+  { id: 'c5', name: 'Stripe API', type: 'API Key', connectedPipelines: 1, createdAt: '2026-02-28', lastUsed: '1h ago' },
+];
+
+export const mockThroughputData = [
+  { time: '00:00', records: 980000 },
+  { time: '02:00', records: 870000 },
+  { time: '04:00', records: 760000 },
+  { time: '06:00', records: 920000 },
+  { time: '08:00', records: 1480000 },
+  { time: '10:00', records: 1650000 },
+  { time: '12:00', records: 1820000 },
+  { time: '14:00', records: 1248304 },
+];
+
+export const mockIngestionTrend = [
+  { date: 'Mar 31', records: 4200000 },
+  { date: 'Apr 1', records: 5100000 },
+  { date: 'Apr 2', records: 4800000 },
+  { date: 'Apr 3', records: 6200000 },
+  { date: 'Apr 4', records: 5900000 },
+  { date: 'Apr 5', records: 5400000 },
+  { date: 'Apr 6', records: 6800000 },
+  { date: 'Apr 7', records: 4900000 },
+];
