@@ -43,10 +43,10 @@ export default function Layout() {
         style={{ height: 48, background: '#131313' }}
       >
         <img
-          src="/pai-logo.svg"
+          src={`${import.meta.env.BASE_URL}pai-logo.svg`}
           alt="Prevalent AI"
           className="block flex-shrink-0"
-          style={{ height: 28, width: 28 }}
+          style={{ height: 16, width: 'auto' }}
         />
         <span className="text-[12px] font-medium" style={{ color: '#9CA3AF' }}>
           Data Ingestion Studio
