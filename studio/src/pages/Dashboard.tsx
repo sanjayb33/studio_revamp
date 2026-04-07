@@ -76,7 +76,7 @@ export default function Dashboard() {
 
   const activePipelines = mockPipelines.filter((p) => p.status === 'active').length;
   const failedPipelines = mockPipelines.filter((p) => p.status === 'failed').length;
-  const pausedPipelines = mockPipelines.filter((p) => p.status === 'paused').length;
+
 
   const filteredPipelines = mockPipelines.filter(
     (p) =>
