@@ -7,6 +7,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import {
   Check, Search, Filter, Play, Pause, Trash2, Eye,
   ChevronDown, ChevronUp, Plus, X, MoreHorizontal, Layers,
+  Database, Network, Upload, Zap, ArrowRight,
 } from 'lucide-react';
 import { mockPipelines } from '@/data/mock';
 import type { Pipeline, PipelineStatus, KGEntityType, StageStatus } from '@/types';
@@ -554,24 +555,97 @@ export default function PipelineList() {
 
         {/* Empty state */}
         {paginated.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-14">
-            <div className="text-[28px] mb-3">🔍</div>
-            <p className="text-[13px] font-semibold mb-1" style={{ color: 'var(--shell-text)' }}>
-              No pipelines found
-            </p>
-            <p className="text-[12px]" style={{ color: 'var(--shell-text-muted)' }}>
-              {search ? `No results for "${search}". Try adjusting your search.` : 'Create your first pipeline to start building the Knowledge Graph.'}
-            </p>
-            {!search && (
-              <button
-                onClick={() => navigate('/templates')}
-                className="flex items-center gap-2 text-[12px] font-medium mt-4 rounded-[44px]"
-                style={{ padding: '7px 16px', background: 'var(--shell-accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
+          search ? (
+            <div className="flex flex-col items-center justify-center py-14">
+              <div className="text-[28px] mb-3">🔍</div>
+              <p className="text-[13px] font-semibold mb-1" style={{ color: 'var(--shell-text)' }}>No pipelines found</p>
+              <p className="text-[12px]" style={{ color: 'var(--shell-text-muted)' }}>
+                No results for &ldquo;{search}&rdquo;. Try adjusting your search.
+              </p>
+            </div>
+          ) : (
+            /* First-run onboarding */
+            <div className="flex flex-col items-center px-8 py-12" style={{ maxWidth: 680, margin: '0 auto' }}>
+              {/* Icon + headline */}
+              <div
+                className="flex items-center justify-center rounded-[12px] mb-4"
+                style={{ width: 52, height: 52, background: 'rgba(99,96,216,0.08)' }}
               >
-                <Plus size={13} /> New Pipeline
-              </button>
-            )}
-          </div>
+                <Zap size={24} style={{ color: '#6360D8' }} />
+              </div>
+              <p className="text-[15px] font-bold mb-1 text-center" style={{ color: 'var(--shell-text)' }}>
+                Build your first pipeline
+              </p>
+              <p className="text-[12px] text-center mb-8" style={{ color: 'var(--shell-text-muted)', maxWidth: 420 }}>
+                Connect a data source, configure entity extraction, and publish enriched security data to your Knowledge Graph in minutes.
+              </p>
+
+              {/* 3-step guide */}
+              <div className="grid gap-3 w-full mb-8" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                {[
+                  {
+                    num: 1, icon: Database, color: '#6360D8', bg: 'rgba(99,96,216,0.08)',
+                    title: 'Connect a source',
+                    body: 'Pick from 40+ connectors — EDR, SIEM, threat intel, cloud security, identity, and more.',
+                  },
+                  {
+                    num: 2, icon: Network, color: '#31A56D', bg: 'rgba(49,165,109,0.08)',
+                    title: 'Configure stages',
+                    body: 'Define how raw events are parsed, what entities to extract, and how duplicates are resolved.',
+                  },
+                  {
+                    num: 3, icon: Upload, color: '#0EA5E9', bg: 'rgba(14,165,233,0.08)',
+                    title: 'Publish to KG',
+                    body: 'Run a dry-run preview, then deploy. Your entities and relationships appear in the graph instantly.',
+                  },
+                ].map(step => {
+                  const Icon = step.icon;
+                  return (
+                    <div
+                      key={step.num}
+                      className="rounded-[6px] flex flex-col"
+                      style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', padding: '16px' }}
+                    >
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <div
+                          className="rounded-[6px] flex items-center justify-center flex-shrink-0"
+                          style={{ width: 30, height: 30, background: step.bg }}
+                        >
+                          <Icon size={14} style={{ color: step.color }} />
+                        </div>
+                        <span
+                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{ background: step.bg, color: step.color }}
+                        >
+                          Step {step.num}
+                        </span>
+                      </div>
+                      <p className="text-[12px] font-semibold mb-1" style={{ color: 'var(--shell-text)' }}>{step.title}</p>
+                      <p className="text-[11px] leading-relaxed" style={{ color: 'var(--shell-text-muted)' }}>{step.body}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* CTAs */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate('/templates')}
+                  className="flex items-center gap-2 text-[13px] font-semibold rounded-[44px]"
+                  style={{ padding: '9px 20px', background: 'var(--shell-accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                >
+                  <Layers size={13} /> Start with a template
+                </button>
+                <button
+                  onClick={() => navigate('/pipeline/new')}
+                  className="flex items-center gap-1.5 text-[12px] font-medium rounded-[44px]"
+                  style={{ padding: '9px 16px', background: 'none', color: 'var(--shell-text-muted)', border: '1px solid var(--ctrl-border)', cursor: 'pointer' }}
+                >
+                  Build from scratch <ArrowRight size={12} />
+                </button>
+              </div>
+            </div>
+          )
         )}
 
         {/* Pagination */}

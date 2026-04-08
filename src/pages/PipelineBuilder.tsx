@@ -856,6 +856,94 @@ function ResolvePanel({ cfg, setCfg, onDone }: { cfg: ResolveConfig; setCfg: (c:
   );
 }
 
+// ─── Dry Run Preview ─────────────────────────────────────────────────────────
+
+const SAMPLE_ENTITIES: Partial<Record<KGEntityType, object[]>> = {
+  host: [
+    { id: 'host::prod-web-01', hostname: 'prod-web-01', ip: '10.0.4.21', os: 'Ubuntu 22.04', risk_score: 72, tags: ['prod', 'web'] },
+    { id: 'host::prod-db-04',  hostname: 'prod-db-04',  ip: '10.0.4.44', os: 'RHEL 9.1',    risk_score: 88, tags: ['prod', 'db', 'critical'] },
+  ],
+  vulnerability: [
+    { id: 'vuln::CVE-2024-21762', cve_id: 'CVE-2024-21762', cvss: 9.8,  severity: 'critical', affected_hosts: 14, has_exploit: true },
+    { id: 'vuln::CVE-2023-44487', cve_id: 'CVE-2023-44487', cvss: 7.5,  severity: 'high',     affected_hosts: 32, has_exploit: false },
+  ],
+  identity: [
+    { id: 'identity::alice.chen@acme.com', email: 'alice.chen@acme.com', provider: 'Okta', mfa_enabled: true,  risk: 'low' },
+    { id: 'identity::bob.smith@acme.com',  email: 'bob.smith@acme.com',  provider: 'Okta', mfa_enabled: false, risk: 'high' },
+  ],
+  finding: [
+    { id: 'finding::cs-det-8823', source: 'CrowdStrike', severity: 'high',   tactic: 'Lateral Movement', status: 'open',     host: 'prod-web-01' },
+    { id: 'finding::cs-det-8824', source: 'CrowdStrike', severity: 'medium', tactic: 'Discovery',        status: 'resolved', host: 'prod-db-04' },
+  ],
+  account: [
+    { id: 'account::svc-deploy-01', name: 'svc-deploy-01', type: 'service', privileged: true,  last_seen: '2 min ago' },
+    { id: 'account::jdoe-admin',    name: 'jdoe-admin',    type: 'human',   privileged: true,  last_seen: '4h ago' },
+  ],
+};
+
+const FALLBACK_SAMPLE = [
+  { id: 'entity::sample-001', type: 'unknown', source: 'pipeline', ingested_at: new Date().toISOString() },
+  { id: 'entity::sample-002', type: 'unknown', source: 'pipeline', ingested_at: new Date().toISOString() },
+];
+
+function DryRunPreview({ entityTypes }: { entityTypes: KGEntityType[] }) {
+  const firstType = entityTypes.find(t => SAMPLE_ENTITIES[t]) ?? entityTypes[0];
+  const samples: object[] = (firstType && SAMPLE_ENTITIES[firstType]) ?? FALLBACK_SAMPLE;
+  const color = firstType ? ENTITY_COLORS[firstType] : '#6360D8';
+
+  return (
+    <div
+      className="rounded-[4px]"
+      style={{ border: '1px solid var(--card-border)', background: 'var(--shell-raised)', overflow: 'hidden' }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-3 py-2"
+        style={{ borderBottom: '1px solid var(--card-border)', background: 'var(--card-bg)' }}
+      >
+        <div className="flex items-center gap-2">
+          <Play size={11} style={{ color }} />
+          <span className="text-[11px] font-semibold" style={{ color: 'var(--shell-text)' }}>Dry Run — Sample Output</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-[3px]" style={{ background: `${color}18`, color }}>
+            {firstType ?? 'entity'}
+          </span>
+          <span className="text-[10px]" style={{ color: 'var(--shell-text-muted)' }}>{samples.length} of ~{(samples.length * 312).toLocaleString()} records</span>
+        </div>
+      </div>
+
+      {/* JSON-like sample rows */}
+      <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {samples.map((entity, i) => (
+          <div
+            key={i}
+            className="rounded-[3px] text-[10px] font-mono leading-relaxed"
+            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', padding: '8px 10px', color: 'var(--shell-text-muted)', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
+          >
+            {Object.entries(entity).map(([k, v]) => (
+              <div key={k}>
+                <span style={{ color: '#6360D8' }}>{`"${k}"`}</span>
+                <span style={{ color: 'var(--shell-text-muted)' }}>{': '}</span>
+                <span style={{ color: typeof v === 'boolean' ? '#D98B1D' : typeof v === 'number' ? '#31A56D' : Array.isArray(v) ? '#0EA5E9' : 'var(--shell-text)' }}>
+                  {JSON.stringify(v)}
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div
+        className="px-3 py-2 text-[10px]"
+        style={{ borderTop: '1px solid var(--card-border)', color: 'var(--shell-text-muted)', background: 'var(--card-bg)' }}
+      >
+        No writes to Knowledge Graph in dry run mode — disable to publish for real.
+      </div>
+    </div>
+  );
+}
+
 function PublishPanel({
   cfg,
   setCfg,
@@ -970,6 +1058,11 @@ function PublishPanel({
           />
         </button>
       </div>
+
+      {/* Dry Run Preview */}
+      {cfg.dryRun && (
+        <DryRunPreview entityTypes={entityTypes} />
+      )}
 
       <button
         onClick={() => { setCfg({ ...cfg, confirmed: true }); onDone(); }}

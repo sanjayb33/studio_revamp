@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowUpRight, ArrowDownRight,
   CheckCircle2, XCircle, PauseCircle, Activity,
-  AlertTriangle, RefreshCw, Zap,
+  AlertTriangle, RefreshCw, Zap, Search, Link2,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -170,6 +170,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [searchQuery] = useState('');
   const [kgBannerDismissed, setKgBannerDismissed] = useState(false);
+  const [kgSearch, setKgSearch] = useState('');
+
+  function handleKgSearch(e: React.FormEvent) {
+    e.preventDefault();
+    navigate('/knowledge-graph');
+  }
 
   const kg = mockKGHealth;
   const activePipelines = mockPipelines.filter(p => p.status === 'active').length;
@@ -251,6 +257,55 @@ export default function Dashboard() {
           direction="up-good"
         />
       </div>
+
+      {/* ── Cross-entity insight callout ── */}
+      <div
+        className="flex items-center gap-3 rounded-[4px] mb-2 text-[12px]"
+        style={{ background: 'rgba(99,96,216,0.06)', border: '1px solid rgba(99,96,216,0.2)', padding: '10px 14px' }}
+      >
+        <Link2 size={14} style={{ color: '#6360D8', flexShrink: 0 }} />
+        <span style={{ color: 'var(--shell-text)' }}>
+          <strong style={{ color: '#6360D8' }}>247 identities</strong> are linked to{' '}
+          <strong style={{ color: '#D12329' }}>38 critical CVEs</strong> — 12 with known active exploits in the last 7 days.
+        </span>
+        <button
+          className="ml-auto text-[11px] font-medium flex-shrink-0"
+          style={{ color: '#6360D8', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+          onClick={() => navigate('/knowledge-graph')}
+        >
+          Explore in KG →
+        </button>
+      </div>
+
+      {/* ── Search the Knowledge Graph ── */}
+      <form onSubmit={handleKgSearch} className="mb-4">
+        <div className="flex items-center gap-2 rounded-[4px]" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', padding: '8px 12px' }}>
+          <Search size={14} style={{ color: 'var(--shell-text-muted)', flexShrink: 0 }} />
+          <input
+            type="text"
+            value={kgSearch}
+            onChange={e => setKgSearch(e.target.value)}
+            placeholder="Search the Knowledge Graph — entities, CVEs, identities, assets…"
+            style={{
+              flex: 1,
+              background: 'none',
+              border: 'none',
+              outline: 'none',
+              fontSize: 13,
+              color: 'var(--shell-text)',
+            }}
+          />
+          {kgSearch && (
+            <button
+              type="submit"
+              className="text-[11px] font-medium px-2.5 py-1 rounded-[4px]"
+              style={{ background: 'var(--shell-accent)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+            >
+              Search
+            </button>
+          )}
+        </div>
+      </form>
 
       {/* ── Main content grid ── */}
       <div className="flex flex-col gap-4">
