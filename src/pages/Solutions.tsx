@@ -57,6 +57,7 @@ const SOLUTIONS = [
     currentFreshness: '4h 12min',
     freshnessOk: false,
     freshnessNote: 'Tenable pipeline delayed — exposure scores may be stale',
+    fixPipelineId: '2',
     kpis: [{ label: 'Assets Monitored', value: '98,340' }, { label: 'High Exposure', value: '1,204' }],
   },
 ];
@@ -156,7 +157,7 @@ export default function Solutions() {
                   <button
                     className="flex items-center gap-1 text-[11px] font-medium rounded-[44px] transition-colors"
                     style={{ color: '#D98B1D', background: '#FEF3C7', border: '1px solid #D98B1D40', cursor: 'pointer', padding: '4px 10px' }}
-                    onClick={() => navigate('/pipelines')}
+                    onClick={() => navigate(sol.fixPipelineId ? `/pipeline/${sol.fixPipelineId}` : '/pipelines')}
                   >
                     Fix pipeline <ArrowRight size={11} />
                   </button>
