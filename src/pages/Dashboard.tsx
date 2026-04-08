@@ -3,14 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowUpRight, ArrowDownRight,
   CheckCircle2, XCircle, PauseCircle, Activity,
-  AlertTriangle, RefreshCw, Zap, Search, Link2,
+  AlertTriangle, RefreshCw, Zap, Search, Link2, Pencil,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import {
-  mockKGHealth, mockKGEntityStats, mockKGGrowthTrend, mockPipelines, mockActivity,
+  mockKGHealth, mockKGEntityStats,
+  mockKGGrowthTrend, mockKGGrowthTrend30d, mockKGGrowthTrend60d, mockKGGrowthTrend90d,
+  mockPipelines, mockActivity,
 } from '@/data/mock';
 import type { EntityFreshness, PipelineStatus } from '@/types';
 
@@ -171,6 +173,37 @@ export default function Dashboard() {
   const [searchQuery] = useState('');
   const [kgBannerDismissed, setKgBannerDismissed] = useState(false);
   const [kgSearch, setKgSearch] = useState('');
+  const [chartRange, setChartRange] = useState<'7d' | '30d' | '60d' | '90d'>('7d');
+
+  // Per-entity freshness SLA (in hours)
+  const [slaHours, setSlaHours] = useState<Record<string, number>>({
+    account:            2,
+    application:        8,
+    assessment:         6,
+    'cloud-account':    2,
+    'cloud-cluster':    2,
+    'cloud-container':  4,
+    'cloud-storage':    4,
+    finding:            1,
+    Group:              8,
+    host:               1,
+    identity:           6,
+    network:            4,
+    'network-interface':8,
+    'network-services': 4,
+    person:             12,
+    vulnerability:      2,
+  });
+  const [editingSla, setEditingSla] = useState<string | null>(null);
+  const [slaInput, setSlaInput] = useState('');
+
+  const CHART_RANGES: Array<{ key: '7d' | '30d' | '60d' | '90d'; label: string; data: object[]; subtitle: string }> = [
+    { key: '7d',  label: '7d',  data: mockKGGrowthTrend,    subtitle: 'New entities added per day — last 7 days' },
+    { key: '30d', label: '30d', data: mockKGGrowthTrend30d, subtitle: 'New entities added per day — last 30 days' },
+    { key: '60d', label: '60d', data: mockKGGrowthTrend60d, subtitle: 'New entities added per day — last 60 days' },
+    { key: '90d', label: '90d', data: mockKGGrowthTrend90d, subtitle: 'New entities added per day — last 90 days' },
+  ];
+  const activeRange = CHART_RANGES.find(r => r.key === chartRange)!;
 
   function handleKgSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -324,18 +357,40 @@ export default function Dashboard() {
                   Knowledge Graph Growth
                 </p>
                 <p className="text-[11px] mt-0.5" style={{ color: 'var(--shell-text-muted)' }}>
-                  New entities added per day — last 7 days
+                  {activeRange.subtitle}
                 </p>
               </div>
-              <button
-                className="flex items-center gap-1.5 text-[11px] rounded-[4px] transition-colors"
-                style={{ color: 'var(--shell-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
-              >
-                <RefreshCw size={12} /> Refresh
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Range selector */}
+                <div className="flex items-center rounded-[4px] overflow-hidden" style={{ border: '1px solid var(--card-border)' }}>
+                  {CHART_RANGES.map(r => (
+                    <button
+                      key={r.key}
+                      onClick={() => setChartRange(r.key)}
+                      className="text-[11px] font-medium transition-colors"
+                      style={{
+                        padding: '3px 9px',
+                        background: chartRange === r.key ? 'var(--shell-accent)' : 'var(--card-bg)',
+                        color: chartRange === r.key ? '#fff' : 'var(--shell-text-muted)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        borderRight: r.key !== '90d' ? '1px solid var(--card-border)' : 'none',
+                      }}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  className="flex items-center gap-1.5 text-[11px] rounded-[4px] transition-colors"
+                  style={{ color: 'var(--shell-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
+                >
+                  <RefreshCw size={12} /> Refresh
+                </button>
+              </div>
             </div>
             <ResponsiveContainer width="100%" height="100%" style={{ flex: 1, minHeight: 0 }}>
-              <AreaChart data={mockKGGrowthTrend} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+              <AreaChart data={activeRange.data as any[]} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
                 <defs>
                   <linearGradient id="gAlerts" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%"  stopColor="#6360D8" stopOpacity={0.25} />
@@ -448,33 +503,81 @@ export default function Dashboard() {
                 Explore KG
               </button>
             </div>
+            {/* Column headers */}
+            <div className="flex items-center gap-3 pb-1.5" style={{ borderBottom: '1px solid var(--shell-border)' }}>
+              <span style={{ width: 20, flexShrink: 0 }} />
+              <span className="text-[10px] font-semibold flex-1 uppercase tracking-wide" style={{ color: 'var(--shell-text-muted)' }}>Type</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide flex-shrink-0" style={{ color: 'var(--shell-text-muted)', minWidth: 52 }}>Status</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide flex-shrink-0" style={{ color: 'var(--shell-text-muted)', minWidth: 64 }}>SLA</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide flex-shrink-0 text-right" style={{ color: 'var(--shell-text-muted)', minWidth: 64 }}>Entities</span>
+            </div>
             <div className="flex flex-col" style={{ gap: 0 }}>
               {mockKGEntityStats.map((entity, i) => {
                 const fresh = FRESHNESS_CONFIG[entity.freshness];
+                const sla = slaHours[entity.type] ?? 4;
+                const isEditing = editingSla === entity.type;
                 return (
                   <div
                     key={entity.type}
-                    className="flex items-center gap-3 py-2.5"
+                    className="flex items-center gap-3 py-2"
                     style={{ borderBottom: i < mockKGEntityStats.length - 1 ? '1px solid var(--shell-border)' : 'none' }}
                   >
                     {/* Entity icon */}
-                    <img
-                      src={ENTITY_ICON[entity.type]}
-                      width={20}
-                      height={20}
-                      alt={entity.type}
-                      style={{ flexShrink: 0 }}
-                    />
-                    <span className="text-[12px] flex-1" style={{ color: 'var(--shell-text)' }}>
+                    <img src={ENTITY_ICON[entity.type]} width={20} height={20} alt={entity.type} style={{ flexShrink: 0 }} />
+                    <span className="text-[12px] flex-1 truncate" style={{ color: 'var(--shell-text)' }}>
                       {toPascalCase(entity.type)}
                     </span>
                     {/* Freshness badge */}
                     <span
                       className="text-[10px] font-medium px-1.5 py-0.5 rounded-[3px] flex-shrink-0"
-                      style={{ background: fresh.bg, color: fresh.color }}
+                      style={{ background: fresh.bg, color: fresh.color, minWidth: 52, textAlign: 'center' }}
                     >
                       {fresh.label}
                     </span>
+                    {/* SLA inline editor */}
+                    <div className="flex items-center flex-shrink-0 group" style={{ minWidth: 64 }}>
+                      {isEditing ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            autoFocus
+                            type="number"
+                            min={1}
+                            max={168}
+                            value={slaInput}
+                            onChange={e => setSlaInput(e.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') {
+                                const v = parseInt(slaInput, 10);
+                                if (v > 0) setSlaHours(prev => ({ ...prev, [entity.type]: v }));
+                                setEditingSla(null);
+                              }
+                              if (e.key === 'Escape') setEditingSla(null);
+                            }}
+                            onBlur={() => {
+                              const v = parseInt(slaInput, 10);
+                              if (v > 0) setSlaHours(prev => ({ ...prev, [entity.type]: v }));
+                              setEditingSla(null);
+                            }}
+                            className="rounded-[3px] text-[11px] font-mono text-center"
+                            style={{
+                              width: 36, border: '1px solid var(--shell-accent)', outline: 'none',
+                              padding: '1px 4px', background: 'var(--card-bg)', color: 'var(--shell-text)',
+                            }}
+                          />
+                          <span className="text-[10px]" style={{ color: 'var(--shell-text-muted)' }}>h</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => { setEditingSla(entity.type); setSlaInput(String(sla)); }}
+                          className="flex items-center gap-1 rounded-[3px] transition-colors"
+                          title="Click to edit SLA"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}
+                        >
+                          <span className="text-[11px] font-mono" style={{ color: 'var(--shell-text-muted)' }}>{sla}h</span>
+                          <Pencil size={9} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--shell-text-muted)' }} />
+                        </button>
+                      )}
+                    </div>
                     <span
                       className="text-[12px] font-medium text-right flex-shrink-0"
                       style={{ color: 'var(--shell-text)', minWidth: 64 }}

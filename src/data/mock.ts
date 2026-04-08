@@ -46,6 +46,63 @@ export const mockKGGrowthTrend = [
   { date: 'Apr 7', entities: 22676,  alerts: 18240, vulns: 380,   assets: 2840,  other: 1216 },
 ];
 
+// ─── KG Growth Trend — 30 days (every 2 days, Mar 9 → Apr 7) ─────────────────
+
+export const mockKGGrowthTrend30d = [
+  { date: 'Mar 9',  alerts: 6200,  vulns: 1400, assets: 3400 },
+  { date: 'Mar 11', alerts: 6800,  vulns: 1550, assets: 3600 },
+  { date: 'Mar 13', alerts: 7100,  vulns: 1620, assets: 3750 },
+  { date: 'Mar 15', alerts: 6500,  vulns: 1480, assets: 3500 },
+  { date: 'Mar 17', alerts: 7400,  vulns: 1700, assets: 3900 },
+  { date: 'Mar 19', alerts: 7900,  vulns: 1820, assets: 4100 },
+  { date: 'Mar 21', alerts: 7600,  vulns: 1780, assets: 4000 },
+  { date: 'Mar 23', alerts: 8200,  vulns: 1950, assets: 4300 },
+  { date: 'Mar 25', alerts: 8600,  vulns: 2020, assets: 4500 },
+  { date: 'Mar 27', alerts: 8100,  vulns: 1900, assets: 4200 },
+  { date: 'Mar 29', alerts: 8900,  vulns: 2100, assets: 4700 },
+  { date: 'Mar 31', alerts: 9200,  vulns: 2180, assets: 4850 },
+  { date: 'Apr 2',  alerts: 10200, vulns: 2800, assets: 5600 },
+  { date: 'Apr 4',  alerts: 12400, vulns: 3100, assets: 5800 },
+  { date: 'Apr 7',  alerts: 18240, vulns: 380,  assets: 2840 },
+];
+
+// ─── KG Growth Trend — 60 days (every 5 days, Feb 7 → Apr 7) ─────────────────
+
+export const mockKGGrowthTrend60d = [
+  { date: 'Feb 7',  alerts: 3400,  vulns: 720,  assets: 1800 },
+  { date: 'Feb 12', alerts: 3800,  vulns: 840,  assets: 2000 },
+  { date: 'Feb 17', alerts: 4200,  vulns: 920,  assets: 2200 },
+  { date: 'Feb 22', alerts: 4700,  vulns: 1050, assets: 2500 },
+  { date: 'Feb 27', alerts: 5100,  vulns: 1150, assets: 2750 },
+  { date: 'Mar 4',  alerts: 5500,  vulns: 1250, assets: 3000 },
+  { date: 'Mar 9',  alerts: 6200,  vulns: 1400, assets: 3400 },
+  { date: 'Mar 14', alerts: 6900,  vulns: 1600, assets: 3700 },
+  { date: 'Mar 19', alerts: 7900,  vulns: 1820, assets: 4100 },
+  { date: 'Mar 24', alerts: 8400,  vulns: 1980, assets: 4400 },
+  { date: 'Mar 29', alerts: 8900,  vulns: 2100, assets: 4700 },
+  { date: 'Apr 3',  alerts: 9800,  vulns: 2500, assets: 4900 },
+  { date: 'Apr 7',  alerts: 18240, vulns: 380,  assets: 2840 },
+];
+
+// ─── KG Growth Trend — 90 days (every 7 days, Jan 7 → Apr 7) ─────────────────
+
+export const mockKGGrowthTrend90d = [
+  { date: 'Jan 7',  alerts: 1400,  vulns: 280,  assets: 720  },
+  { date: 'Jan 14', alerts: 1800,  vulns: 360,  assets: 920  },
+  { date: 'Jan 21', alerts: 2200,  vulns: 440,  assets: 1100 },
+  { date: 'Jan 28', alerts: 2600,  vulns: 520,  assets: 1350 },
+  { date: 'Feb 4',  alerts: 3100,  vulns: 640,  assets: 1620 },
+  { date: 'Feb 11', alerts: 3700,  vulns: 800,  assets: 1980 },
+  { date: 'Feb 18', alerts: 4300,  vulns: 950,  assets: 2280 },
+  { date: 'Feb 25', alerts: 5000,  vulns: 1120, assets: 2680 },
+  { date: 'Mar 4',  alerts: 5500,  vulns: 1250, assets: 3000 },
+  { date: 'Mar 11', alerts: 6500,  vulns: 1480, assets: 3500 },
+  { date: 'Mar 18', alerts: 7700,  vulns: 1760, assets: 4050 },
+  { date: 'Mar 25', alerts: 8600,  vulns: 2020, assets: 4500 },
+  { date: 'Apr 1',  alerts: 8400,  vulns: 2100, assets: 4800 },
+  { date: 'Apr 7',  alerts: 18240, vulns: 380,  assets: 2840 },
+];
+
 // ─── Pipelines ────────────────────────────────────────────────────────────────
 
 export const mockPipelines: Pipeline[] = [

@@ -540,25 +540,6 @@ function GraphVisualization({
   const panStart = useRef({ cx: 0, cy: 0, vx: 0, vy: 0, vw: 560, vh: 480 });
   const entityStats = Object.fromEntries(mockKGEntityStats.map(e => [e.type, e]));
 
-  // Wheel zoom — requires passive:false, so use imperative listener
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const handler = (e: WheelEvent) => {
-      e.preventDefault();
-      const factor = e.deltaY > 0 ? 1.15 : 0.87;
-      const rect = svg.getBoundingClientRect();
-      setVb(v => {
-        const mx = ((e.clientX - rect.left) / rect.width) * v.w + v.x;
-        const my = ((e.clientY - rect.top) / rect.height) * v.h + v.y;
-        const nw = Math.min(1400, Math.max(140, v.w * factor));
-        const nh = nw * (480 / 560);
-        return { x: mx - (mx - v.x) * (nw / v.w), y: my - (my - v.y) * (nh / v.h), w: nw, h: nh };
-      });
-    };
-    svg.addEventListener('wheel', handler, { passive: false });
-    return () => svg.removeEventListener('wheel', handler);
-  }, []);
 
   function onBgMouseDown(e: React.MouseEvent) {
     setIsPanning(true);
@@ -617,7 +598,7 @@ function GraphVisualization({
             </div>
           ))}
         </div>
-        <span className="text-[10px] ml-auto" style={{ color: 'var(--shell-text-muted)' }}>Scroll to zoom · Drag to pan · Click node to inspect</span>
+        <span className="text-[10px] ml-auto" style={{ color: 'var(--shell-text-muted)' }}>Drag to pan · Click node to inspect</span>
         <div className="flex items-center gap-1">
           {[{ lbl: '+', fn: () => zoomBy(0.77) }, { lbl: '⊙', fn: () => setVb(INIT_VB) }, { lbl: '−', fn: () => zoomBy(1.3) }].map(b => (
             <button key={b.lbl} onClick={b.fn}
